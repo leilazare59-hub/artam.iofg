@@ -11,10 +11,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
-  administration: write
 
 concurrency:
   group: github-pages
@@ -30,6 +29,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
 
       - name: Ensure Pages site is enabled
         env:
@@ -40,6 +41,7 @@ jobs:
           code=$(curl -s -o /tmp/pages.json -w '%{http_code}' \
             -H "Authorization: Bearer $GH_TOKEN_WORKFLOW" \
             -H "Accept: application/vnd.github+json" "$API")
+          post_code="skipped"
           echo "GET /pages -> HTTP $code"
           if [ "$code" = "404" ]; then
             echo "Pages site not found -> enabling with build_type=workflow ..."
@@ -51,10 +53,32 @@ jobs:
             echo "POST /pages -> HTTP $post_code"
             cat /tmp/post.json || true
             echo
-            if [ "$post_code" != "201" ] && [ "$post_code" != "202" ]; then
-              echo "::error::Failed to enable GitHub Pages (HTTP $post_code)"
-              exit 1
-            fi
+          fi
+          # ثبت وضعیت برای عیب‌یابی (commit-back)
+          mkdir -p diag
+          {
+            echo "{"
+            echo "  \"get_pages\": $code,"
+            echo "  \"post_pages\": \"$post_code\","
+            echo "  \"post_body\": $(python3 -c 'import json,os; p="/tmp/post.json"; print(json.dumps(open(p).read()[:400]) if os.path.exists(p) else "null")' 2>/dev/null || echo null),"
+            echo "  \"run\": \"$GITHUB_RUN_ID\""
+            echo "}"
+          } > diag/pages-status.json
+          if [ "$post_code" != "skipped" ] && [ "$post_code" != "201" ] && [ "$post_code" != "202" ]; then
+            git config user.name "pages-bot"
+            git config user.email "pages-bot@users.noreply.github.com"
+            git add diag/pages-status.json
+            git commit -q -m "diag: pages enablement status (run $GITHUB_RUN_ID)" || true
+            git push -q origin HEAD:"$GITHUB_REF_NAME" || true
+            echo "::error::Failed to enable GitHub Pages (HTTP $post_code)"
+            exit 1
+          fi
+          if [ "$code" = "404" ]; then
+            git config user.name "pages-bot"
+            git config user.email "pages-bot@users.noreply.github.com"
+            git add diag/pages-status.json
+            git commit -q -m "diag: pages enabled ok (run $GITHUB_RUN_ID)" || true
+            git push -q origin HEAD:"$GITHUB_REF_NAME" || true
           fi
 
       - name: Upload artifact
