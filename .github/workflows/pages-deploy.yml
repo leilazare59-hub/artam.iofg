@@ -41,7 +41,14 @@ jobs:
             -H "Accept: application/vnd.github+json" "$API")
           echo "GET /pages -> HTTP $code"
           if [ "$code" = "200" ]; then
-            echo "ok=true" >> "$GITHUB_OUTPUT"
+            bt=$(grep -o '"build_type":"[^"]*"' /tmp/pages.json | head -1 | cut -d'"' -f4)
+            echo "build_type=$bt"
+            if [ "$bt" = "workflow" ]; then
+              echo "ok=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "ok=false" >> "$GITHUB_OUTPUT"
+              echo "::warning::Pages از طریق شاخه (Deploy from a branch) فعال است؛ خود گیت‌هاب پوشه docs/ را منتشر می‌کند و این ورک‌فلو لازم نیست."
+            fi
           else
             echo "ok=false" >> "$GITHUB_OUTPUT"
             echo "::warning::GitHub Pages هنوز برای این مخزن فعال نشده است. از Settings > Pages منبع را روی شاخه و پوشه /docs قرار دهید، یا سورس را GitHub Actions بگذارید؛ پس از آن این ورک‌فلو خودکار منتشر می‌کند."
