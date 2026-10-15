@@ -17,5 +17,14 @@ rm -rf docs
 mkdir -p docs
 cp -r app/dist/. docs/
 
+# رونوشت در ریشهٔ مخزن: چون Pages روی «ریشهٔ شاخه» تنظیم شده،
+# این فایل‌ها باعث می‌شوند خودِ ریشه هم سایت را سرو کند.
+echo "==> [2.5/3] رونوشت فایل‌های سایت در ریشهٔ مخزن ..."
+cp docs/index.html      ./index.html
+cp docs/app-release.apk ./app-release.apk
+cp docs/icon.svg        ./icon.svg
+cp docs/manifest.json   ./manifest.json
+cp docs/sw.js           ./sw.js
+
 echo "==> [3/3] تمام! سایت آماده‌ست در پوشه docs/"
 echo "    پیش‌نمایش محلی:  npm run preview"
