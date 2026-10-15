@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# ساخت کامل سایت: صفحه بازی (Vite) + سایت شخصی -> پوشه docs/
+# ساخت کامل سایت (پروژه Vite در app/) -> پوشه docs/
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-echo "==> [1/3] نصب وابستگی‌ها و بیلد صفحه بازی (Vite)..."
-cd game-app
+echo "==> [1/3] نصب وابستگی‌ها و بیلد سایت (Vite)..."
+cd app
 if [ ! -d node_modules ]; then
   npm ci --no-audit --no-fund
 fi
@@ -14,11 +14,8 @@ cd "$ROOT"
 
 echo "==> [2/3] مونتاژ خروجی نهایی در docs/ ..."
 rm -rf docs
-mkdir -p docs/game
-cp -r game-app/dist/. docs/game/
-cp site/index.html   docs/index.html
-cp site/profile.jpg  docs/profile.jpg
+mkdir -p docs
+cp -r app/dist/. docs/
 
 echo "==> [3/3] تمام! سایت آماده‌ست در پوشه docs/"
 echo "    پیش‌نمایش محلی:  npm run preview"
-echo "    انتشار:          پوشه docs روی GitHub Pages فعال است (شاخه جاری، مسیر /docs)"
