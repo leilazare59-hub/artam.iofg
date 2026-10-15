@@ -1,0 +1,10 @@
+{
+  "name": "artam-iofg-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "سایت شخصی آرتام حمیدی + صفحه دانلود بازی",
+  "scripts": {
+    "build": "bash scripts/build.sh",
+    "preview": "bash scripts/preview.sh"
+  }
+}

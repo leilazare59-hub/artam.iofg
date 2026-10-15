@@ -1,0 +1,4 @@
+node_modules/
+game-app/dist/
+.DS_Store
+*.log
