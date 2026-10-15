@@ -6,8 +6,9 @@
 | نوع | آدرس |
 |---|---|
 | پیش‌نمایش زندهٔ Arena | دکمهٔ LIVE PREVIEW (پورت 8080) |
-| لینک فوری عمومی (CDN) | https://cdn.jsdelivr.net/gh/leilazare59-hub/artam.iofg@arena/90cb42e2-artam-iofg/docs/index.html |
 | آدرس رسمی (بعد از فعال‌سازی Pages) | https://leilazare59-hub.github.io/artam.iofg/ |
+
+> ⚠️ لینک‌های CDN مانند jsDelivr یا raw گیت‌هاب فایل HTML را به‌صورت متن ساده (text/plain) می‌فرستند و سایت با آن‌ها «اجرا» نمی‌شود؛ تنها راه داشتن لینک عمومی واقعی، فعال‌سازی GitHub Pages است (پایین همین صفحه).
 
 ## ساختار مخزن
 | پوشه | محتوا |
