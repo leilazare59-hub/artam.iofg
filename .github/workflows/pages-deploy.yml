@@ -30,10 +30,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-        with:
-          enable_pages: true
+      - name: Ensure Pages site is enabled
+        env:
+          GH_TOKEN_WORKFLOW: ${{ github.token }}
+        run: |
+          set -e
+          API="https://api.github.com/repos/$GITHUB_REPOSITORY/pages"
+          code=$(curl -s -o /tmp/pages.json -w '%{http_code}' \
+            -H "Authorization: Bearer $GH_TOKEN_WORKFLOW" \
+            -H "Accept: application/vnd.github+json" "$API")
+          echo "GET /pages -> HTTP $code"
+          if [ "$code" = "404" ]; then
+            echo "Pages site not found -> enabling with build_type=workflow ..."
+            curl -sS -X POST \
+              -H "Authorization: Bearer $GH_TOKEN_WORKFLOW" \
+              -H "Accept: application/vnd.github+json" \
+              -H "Content-Type: application/json" \
+              -d '{"build_type":"workflow"}' "$API"
+            echo
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
