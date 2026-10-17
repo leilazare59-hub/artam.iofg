@@ -1,1 +1,0 @@
-# artam.iofg
